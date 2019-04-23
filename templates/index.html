@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <title>Lab 2</title>
+        <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/d3-tip/0.7.1/d3-tip.min.js"></script> -->
+        <script src="{{ url_for('static', filename='js/d3.v4.min.js') }}"></script>
+        <script src="{{ url_for('static', filename='js/jquery.min.js') }}"></script>
+        <script src="{{ url_for('static', filename='js/topojson.v2.min.js') }}"></script>
+        <script src="{{ url_for('static', filename='js/d3-tip.min.js') }}"></script>
+        <script src="{{ url_for('static', filename='js/index.js') }}"></script>
+
+        <!--<script src="./static/js/index.js"></script>-->
+
+        <style>
+            .navbar {
+              overflow: hidden;
+              background-color: #333;
+              top: 0;
+              width: 100%;  
+            }
+
+            .navbar a {
+              display: block;
+              color: #f2f2f2;
+              text-align: center;
+              padding: 14px 16px;
+              text-decoration: none;
+              font-size: 25px;
+            }
+
+            .navbar a:hover {
+              background: #ddd;
+              color: black;
+            }
+
+        </style>
+    </head>
+
+    <body>
+        <center>
+        <div class="navbar" style="margin-bottom: 20px;text-align:center;">
+            <a href="#home">CSE564 Visualization Final Project</a>
+        </div>
+		</center>
+
+        <div style="transform: translateY(30px);">
+        <div style="width:800px; margin:0 auto;">
+        <div id="main_chart">
+            
+
+        </div>
+        </div>
+
+        <center>
+       
+        <div style="margin-bottom: 10px; float:center" style="display: inline-block margin-top:20px">
+           <button type="button"  onclick="render_state_map()">Task 3</button>
+
+
+              
+        </center>
+        </div>
+
+    </body>
+</html>
