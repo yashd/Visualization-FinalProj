@@ -6,8 +6,10 @@
         <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/d3-tip/0.7.1/d3-tip.min.js"></script> -->
         <script src="{{ url_for('static', filename='js/d3.v4.min.js') }}"></script>
         <script src="{{ url_for('static', filename='js/jquery.min.js') }}"></script>
-        <script src="{{ url_for('static', filename='js/topojson.v2.min.js') }}"></script>
+        <!--<script src="{{ url_for('static', filename='js/topojson.v2.min.js') }}"></script>-->
+        <script src="{{ url_for('static', filename='js/topojson-client.js') }}"></script>
         <script src="{{ url_for('static', filename='js/d3-tip.min.js') }}"></script>
+        <script src="{{ url_for('static', filename='js/d3-scale-chromatic.v1.min.js') }}"></script>
         <script src="{{ url_for('static', filename='js/index.js') }}"></script>
 
         <!--<script src="./static/js/index.js"></script>-->
@@ -34,6 +36,13 @@
               color: black;
             }
 
+            <!--.states {-->
+                <!--fill: #f2f2f2;-->
+                <!--stroke: #fff;-->
+                <!--stroke-linejoin: round;-->
+                <!--}-->
+
+
         </style>
     </head>
 
@@ -57,10 +66,11 @@
         <div style="margin-bottom: 10px; float:center" style="display: inline-block margin-top:20px">
            <button type="button"  onclick="render_state_map()">Task 3</button>
 
-
-              
+        </div>
         </center>
         </div>
+
+
 
     </body>
 </html>
