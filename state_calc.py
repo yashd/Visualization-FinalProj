@@ -38,6 +38,22 @@ def prepare_state_df():
     grouped_df = state_df.groupby(['new_state','state_code', 'case_status']).size().unstack(fill_value=0)
     final_df = pd.DataFrame(grouped_df.reset_index().values,
                             columns=["State", 'state_code',"Certified", "Certified-Expired", "Denied", "Withdrawn"])
+    final_df = final_df[final_df.state_code != ""]
+    final_df = final_df.rename(index=str, columns={"Certified-Expired": "Expired"})
+
+    return final_df;
+
+
+def prepare_company_df():
+    df = pd.read_csv(filename)
+    state_df = df[['employer_state', 'case_status', 'employer_name']]
+    grouped_df = state_df.groupby(['employer_name']).count()
+    final_df = pd.DataFrame(grouped_df.reset_index().values, columns=["employer_name", "Count1", "Count2"])
+    final_df = final_df[final_df.employer_name != ""]
+    final_df = final_df[['employer_name', 'Count1']]
+    final_df.sort_values("Count1", inplace=True, ascending=False)
+    final_df.reset_index(level=0, drop=True, inplace=True)
+    final_df = final_df.head(20);
     return final_df;
 
 
@@ -45,6 +61,14 @@ def prepare_state_df():
 def get_state_decision_data():
     return state_df.to_json(orient="records");
 
+
+@app.route('/companybar')
+def get_company_bar_chart():
+    return company_df.to_json(orient="records");
+
+
+
 if __name__ == '__main__':
     state_df=prepare_state_df();
+    company_df=prepare_company_df();
     app.run("localhost", 8080, debug=True)

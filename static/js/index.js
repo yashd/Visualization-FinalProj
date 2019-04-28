@@ -4,6 +4,10 @@ function render_state_map(){
         draw_us_plot('/stateMap',"StateWise distribution of Visa Applications");
 	}
 
+function company_bar_chart(){
+        console.log("Loading bar chart");
+        draw_company_bar_plot('/companybar',"Top 20 companies of total Visa Applications");
+	}
 
 function draw_us_plot(url,title){
 	$('#main_chart').empty();
@@ -24,13 +28,34 @@ function draw_us_plot(url,title){
 
 }
 
+
+function draw_company_bar_plot(url,title){
+	$('#main_chart').empty();
+	$.ajax({
+	  type: 'GET',
+	  url: url,
+      contentType: 'application/json; charset=utf-8',
+
+	  success: function(result) {
+			console.log("logging at ajax call",title);
+		    draw_company_chart(result,title);
+	  },
+	  error: function(result) {
+	  	console.log(result);
+		$("#main_chart").html(result);
+	  }
+	});
+
+}
+
+
 function draw_us_chart(data,title){
 
 
     console.log("Logging title:",title);
 
     var data=JSON.parse(data);
-    //console.log("Logging result:",data);
+    console.log("Logging result:",data);
 
     var min_val=d3.min(data, function(d){return +d.Certified;})
     var max_val=d3.max(data, function(d){return +d.Certified;})
@@ -54,7 +79,11 @@ function draw_us_chart(data,title){
 
     var final_data = d3.map();
     data.forEach(function(d) {
-            final_data.set(+d.state_code, { State:d.State,Certified: +d.Certified });
+            final_data.set(+d.state_code, {
+            State:d.State,
+            Certified: +d.Certified,
+            Denied:+d.Denied,
+            Expired:+d.Expired});
     });
 
     var path=d3.geoPath();
@@ -100,12 +129,97 @@ function draw_us_chart(data,title){
             .attr("d", path)
             .attr("stroke", "#aaa")
             .attr("stroke-width", 0.5)
-            .attr("fill",function(d){ console.log("Inside fill:",+d.id);return color(final_data.get(+d.id).Certified)})
+            .attr("fill",function(d){return color(final_data.get(+d.id).Certified)})
             .on('mouseover', function(d) {
-                tip_disp.html( "<div style='color:blue,font-weight: bold,font-size: 150%;'>" +final_data.get(+d.id).State + ", " + final_data.get(+d.id).Certified + "</div>");
+                tip_disp.html( "<div>" +"State:&nbsp;"+final_data.get(+d.id).State +
+                 "&nbsp;</br> " +"Certified:&nbsp;"+ final_data.get(+d.id).Certified + "&nbsp;"+
+                 "&nbsp;</br> " +"Denied:&nbsp;"+ final_data.get(+d.id).Denied + "&nbsp;"+
+                 "&nbsp;</br> " +"Expired:&nbsp;"+ final_data.get(+d.id).Expired + "&nbsp;"+
+
+                 "</div>"
+                ).style("color","blue").style("font-weight","bold")
+                .style("font-size","110%").style("border","thin solid black")
+                .style("border-radius","8px");
                 tip_disp.show(this);
-                //d3.select("#info").html(+d.id+", "+final_data.get(+d.id).State + ", " + final_data.get(+d.id).Certified )
             })
 
+
     });
+}
+
+
+
+function draw_company_chart(data,title){
+
+    console.log("Logging title:",title);
+    var data=JSON.parse(data);
+    console.log("Logging result:",data);
+
+
+    var margin = {top: 30, right: 50, bottom: 40, left:40};
+	var width = 800 - margin.left - margin.right;
+	var height = 600 - margin.top - margin.bottom;
+
+
+    var svg = d3.select('#main_chart')
+			.append('svg')
+			.attr('width', width + margin.left + margin.right)
+			.attr('height', height + margin.top + margin.bottom)
+		    .append('g')
+			.attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
+
+    var text = svg.append('text')
+                  .attr('width', width)
+                  .attr('x', "14em" )
+                  .attr('y', "1em")
+                  .style('font-size', '1.5em')
+                  .style('text-anchor', 'middle')
+                  .text('Company wise  Visa Distribution')
+  	              .style("fill", "black")
+
+        // set the ranges
+    var x = d3.scaleBand()
+              .range([0, width])
+              .padding(0.1);
+    var y = d3.scaleLinear()
+              .range([height, 0]);
+
+
+     data.forEach(function(d) {
+            d.Count = +d.Count1;
+        });
+
+    console.log("Changed Data:",data);
+  // Scale the range of the data in the domains
+  x.domain(data.map(function(d) { return d.employer_name; }));
+  y.domain([0, d3.max(data, function(d) { return d.Count; })+1000]);
+
+
+  svg.selectAll(".bar")
+      .data(data)
+      .enter().append("rect")
+      .attr("class", "bar")
+      .attr("x", function(d) { return x(d.employer_name); })
+      .attr("width", x.bandwidth())
+      .attr("y", function(d) { return y(d.Count); })
+      .attr("height", function(d) { return height - y(d.Count); });
+
+  // add the x Axis
+  svg.append("g")
+      .attr("transform", "translate(0," + height + ")")
+      .call(d3.axisBottom(x).ticks(20))
+      .selectAll("text")
+        .style("text-anchor", "end")
+        .attr("dx", "-.8em")
+        .attr("dy", ".15em")
+        .attr("transform", "rotate(-90)");;
+
+  // add the y Axis
+  svg.append("g")
+      .call(d3.axisLeft(y));
+
+
+
+
+
 }
