@@ -141,7 +141,9 @@ function draw_us_chart(data,title){
                 .style("font-size","110%").style("border","thin solid black")
                 .style("border-radius","8px");
                 tip_disp.show(this);
-            })
+            }).on("mouseleave", function(d){
+            tip_disp.hide();
+                });
 
 
     });
@@ -171,17 +173,17 @@ function draw_company_chart(data,title){
     var text = svg.append('text')
                   .attr('width', width)
                   .attr('x', "14em" )
-                  .attr('y', "1em")
+                  .attr('y', "0em")
                   .style('font-size', '1.5em')
                   .style('text-anchor', 'middle')
                   .text('Company wise  Visa Distribution')
   	              .style("fill", "black")
 
         // set the ranges
-    var x = d3.scaleBand()
+    var x = d3.scaleLinear()
               .range([0, width])
-              .padding(0.1);
-    var y = d3.scaleLinear()
+
+    var y = d3.scaleBand()
               .range([height, 0]);
 
 
@@ -191,35 +193,45 @@ function draw_company_chart(data,title){
 
     console.log("Changed Data:",data);
   // Scale the range of the data in the domains
-  x.domain(data.map(function(d) { return d.employer_name; }));
-  y.domain([0, d3.max(data, function(d) { return d.Count; })+1000]);
+  y.domain(data.map(function(d) { return d.mod_employer_name; })).padding(0.1);
+  x.domain([0, d3.max(data, function(d) { return d.Count; })+1000]);
+
+    var tip_disp = d3.tip().attr('class', 'd3-tip').offset([0, +10])
+    svg.call(tip_disp);
+
+  svg.append("g")
+        .attr("class", "x axis")
+       	.attr("transform", "translate(150," + height + ")")
+      	.call(d3.axisBottom(x).ticks(5).tickFormat(function(d) { return parseInt(d); }));
 
 
-  svg.selectAll(".bar")
-      .data(data)
+     svg.append("g")
+        .attr("class", "y axis")
+        .attr("transform", "translate(150," + 0 + ")")
+        .call(d3.axisLeft(y));
+
+    svg.selectAll(".bar")
+        .data(data)
       .enter().append("rect")
-      .attr("class", "bar")
-      .attr("x", function(d) { return x(d.employer_name); })
-      .attr("width", x.bandwidth())
-      .attr("y", function(d) { return y(d.Count); })
-      .attr("height", function(d) { return height - y(d.Count); });
+        .attr("class", "bar")
+        .attr("x", 150)
+        .attr("height", y.bandwidth())
+        .attr("y", function(d) { return y(d.mod_employer_name); })
+        .attr("width", function(d) { return x(d.Count); })
+        .on("mouseenter", function(d){
 
-  // add the x Axis
-  svg.append("g")
-      .attr("transform", "translate(0," + height + ")")
-      .call(d3.axisBottom(x).ticks(20))
-      .selectAll("text")
-        .style("text-anchor", "end")
-        .attr("dx", "-.8em")
-        .attr("dy", ".15em")
-        .attr("transform", "rotate(-90)");;
-
-  // add the y Axis
-  svg.append("g")
-      .call(d3.axisLeft(y));
-
-
-
+            tip_disp.html( "<div>" +"Employer_Name:&nbsp;"+d.mod_employer_name +
+                 "&nbsp;</br> " +"Count:&nbsp;"+d.Count + "&nbsp;"+
+                 "</div>"
+                ).style("color","blue").style("font-weight","bold")
+                .style("font-size","110%").style("border","thin solid black")
+                .style("border-radius","8px");
+                tip_disp.show(this);
+            tip_disp.html((d.mod_employer_name) + "<br>"+ (d.Count));
+        })
+        .on("mouseleave", function(d){
+            tip_disp.hide();
+        });
 
 
 }

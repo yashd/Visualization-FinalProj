@@ -51,6 +51,17 @@ def prepare_company_df():
     final_df = pd.DataFrame(grouped_df.reset_index().values, columns=["employer_name", "Count1", "Count2"])
     final_df = final_df[final_df.employer_name != ""]
     final_df = final_df[['employer_name', 'Count1']]
+
+    employer_names = final_df['employer_name'].values;
+    mod_employer_names = []
+    #
+    for val in employer_names:
+        if val in state_mapping.company_mapping:
+            mod_employer_names.append(state_mapping.company_mapping[val]);
+        else:
+            mod_employer_names.append(val);
+
+    final_df['mod_employer_name'] = mod_employer_names
     final_df.sort_values("Count1", inplace=True, ascending=False)
     final_df.reset_index(level=0, drop=True, inplace=True)
     final_df = final_df.head(20);
