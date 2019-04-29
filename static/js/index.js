@@ -212,7 +212,7 @@ function draw_company_chart(data,title){
 
 
     var margin = {top: 30, right: 50, bottom: 40, left:40};
-	var width = 800 - margin.left - margin.right;
+	var width = 1000 - margin.left - margin.right;
 	var height = 600 - margin.top - margin.bottom;
 
 
@@ -249,8 +249,11 @@ function draw_company_chart(data,title){
   y.domain(data.map(function(d) { return d.mod_employer_name; })).padding(0.1);
   x.domain([0, d3.max(data, function(d) { return d.Count; })+1000]);
 
-    var tip_disp = d3.tip().attr('class', 'd3-tip').offset([0, +10])
+    var tip_disp = d3.tip().attr('class', 'd3-tip').offset([0,+20])
+//    var tip_disp = d3.tip().attr('class', 'd3-tip')
     svg.call(tip_disp);
+
+    var div = d3.select("body").append("div").attr("class", "toolTip");
 
   svg.append("g")
         .attr("class", "x axis")
@@ -273,22 +276,25 @@ function draw_company_chart(data,title){
         .attr("width", function(d) { return x(d.Count); })
         .on("mouseenter", function(d){
 
-            console.log("This event is:",d3.event.pageX,d3.event.pageY);
+            console.log("This event is:",d3.event.pageX+10,d3.event.pageY);
 
+                div.style("left", d3.event.pageX+10+"px");
+                div.style("top", d3.event.pageY-25+"px");
+                div.style("display", "inline-block");
+                div.html((d.mod_employer_name)+"<br>"+(d.Count));
 
-            tip_disp.html( "<div>" +"Employer_Name:&nbsp;"+d.mod_employer_name +
-                 "&nbsp;</br> " +"Count:&nbsp;"+d.Count + "&nbsp;"+
-                 "</div>"
-                ).style("color","blue").style("font-weight","bold")
-                .style("font-size","110%").style("border","thin solid black")
-                .style("border-radius","8px")
-                
-                ;
-                tip_disp.show(this);
-            tip_disp.html((d.mod_employer_name) + "<br>"+ (d.Count));
+//            tip_disp.html( "<div>"+"Count:&nbsp;"+d.Count + "&nbsp;"+
+//                 "</div>"
+//                ).style("color","blue").style("font-weight","bold")
+//                .style("font-size","110%").style("border","thin solid black")
+//                .style("border-radius","8px")
+//
+//                tip_disp.show(this);
+//            tip_disp.html((d.mod_employer_name) + "<br>"+ (d.Count));
         })
         .on("mouseleave", function(d){
-            tip_disp.hide();
+             div.style("display", "none");
+//            tip_disp.hide();
         });
 
 
@@ -443,6 +449,8 @@ function draw_company_percent_chart(data,title){
     var tip_disp = d3.tip().attr('class', 'd3-tip').offset([0, +10])
     svg.call(tip_disp);
 
+    var div = d3.select("body").append("div").attr("class", "toolTip");
+
   svg.append("g")
         .attr("class", "x axis")
        	.attr("transform", "translate(150," + height + ")")
@@ -464,19 +472,26 @@ function draw_company_percent_chart(data,title){
         .attr("width", function(d) { return x(d.success_percent); })
         .on("mouseenter", function(d){
 
-            tip_disp.html( "<div>" +"Employer_Name:&nbsp;"+d.mod_employer_name+
-                "&nbsp;</br> " +"Success %:&nbsp;"+d.success_percent + "&nbsp;"+
-                 "</br>"+"Total :&nbsp;"+d.total +"&nbsp;"+
-                 "</div>"
-                ).style("color","blue").style("font-weight","bold")
-                .style("font-size","110%").style("border","thin solid black")
-                .style("border-radius","8px");
+//            tip_disp.html( "<div>" +"Employer_Name:&nbsp;"+d.mod_employer_name+
+//                "&nbsp;</br> " +"Success %:&nbsp;"+d.success_percent + "&nbsp;"+
+//                 "</br>"+"Total :&nbsp;"+d.total +"&nbsp;"+
+//                 "</div>"
+//                ).style("color","blue").style("font-weight","bold")
+//                .style("font-size","110%").style("border","thin solid black")
+//                .style("border-radius","8px");
+//
+//            tip_disp.show(this);
 
-            tip_disp.show(this);
+
+             div.style("left", d3.event.pageX+10+"px");
+                div.style("top", d3.event.pageY-25+"px");
+                div.style("display", "inline-block");
+                div.html((d.mod_employer_name)+"<br>"+(d.success_percent));
 
         })
         .on("mouseleave", function(d){
-            tip_disp.hide();
+             div.style("display", "none");
+//            tip_disp.hide();
         });
 
 
